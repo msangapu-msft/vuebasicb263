@@ -1,0 +1,103 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "title": "Deploys Static Web App",
+    "description": "This template deploys a Vue Static Web App"
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    },
+    "staticSiteName": {
+      "type": "string",
+      "defaultValue": "[format('swa-{0}', uniqueString(resourceGroup().id))]",
+      "minLength": 2,
+      "metadata": {
+        "description": "static web app name"
+      }
+    },
+    "staticSiteSku": {
+      "type": "string",
+      "defaultValue": "Standard",
+      "metadata": {
+        "description": "The SKU of Static web app."
+      }
+    },
+    "staticSiteSkuCode": {
+      "type": "string",
+      "defaultValue": "Standard",
+      "metadata": {
+        "description": "The SKU code of Static web app."
+      }
+    },
+    "staticSiteAppLocation": {
+      "type": "string",
+      "defaultValue": "/",
+      "metadata": {
+        "description": "The app location for the repo used to create static web app"
+      }
+    },
+    "staticSiteApiLocation": {
+      "type": "string",
+      "defaultValue": "api",
+      "metadata": {
+        "description": "The api location for the repo used to create static web app"
+      }
+    },
+    "staticSiteAppArtifactLocation": {
+      "type": "string",
+      "defaultValue": "dist",
+      "metadata": {
+        "description": "The app artifact location for the repo used to create static web app"
+      }
+    },
+    "repoUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "The repo url used to deploy static web app"
+      }
+    },
+    "branch": {
+      "type": "string",
+      "defaultValue": "main",
+      "metadata": {
+        "description": "The branch of the repo used to deploy static web app"
+      }
+    },
+    "repositoryToken": {
+      "type": "secureString",
+      "metadata": {
+        "description": "The github token of the repo's owner to deploy static web app"
+      }
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "type": "Microsoft.Web/staticSites",
+      "apiVersion": "2021-01-15",
+      "name": "[parameters('staticSiteName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "Tier": "[parameters('staticSiteSku')]",
+        "Name": "[parameters('staticSiteSkuCode')]"
+      },
+      "properties": {
+        "name": "[parameters('staticSiteName')]",
+        "repositoryUrl": "[parameters('repoUrl')]",
+        "branch": "[parameters('branch')]",
+        "repositoryToken": "[parameters('repositoryToken')]",
+        "buildProperties": {
+          "appLocation": "[parameters('staticSiteAppLocation')]",
+          "apiLocation": "[parameters('staticSiteApiLocation')]",
+          "appArtifactLocation": "[parameters('staticSiteAppArtifactLocation')]"
+        }
+      }
+    }
+  ]
+}
